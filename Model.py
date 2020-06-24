@@ -65,6 +65,7 @@ class GameEngine:
         '''
         self.ev_manager = ev_manager
         ev_manager.register_listener(self)
+        self.t = 5
 
         self.state_machine = StateMachine()
 
@@ -147,13 +148,10 @@ class GameEngine:
         self.running = True
         self.ev_manager.post(EventInitialize())
         self.timer = Const.GAME_LENGTH
-        t = 5
-        prev = self.timer
         while self.running:
-            if prev - self.timer >= t * Const.FPS:
+            if self.timer % (self.t * Const.FPS) == 0 and self.timer != Const.GAME_LENGTH:
                 self.players[0].swap()
                 self.players[1].swap()
-                prev = self.timer
             self.ev_manager.post(EventEveryTick())
             self.clock.tick(Const.FPS)
 
@@ -163,7 +161,7 @@ class Player:
         self.player_id = player_id
         self.position = Const.PLAYER_INIT_POSITION[player_id] # is a pg.Vector2
         self.speed = Const.SPEED_ATTACK if player_id == 1 else Const.SPEED_DEFENSE
-        self.status = 'a'  if player_id == 1 else 'd'
+        self.status = 'attacker'  if player_id == 1 else 'defender'
 
     def move_direction(self, direction: str):
         '''
@@ -177,9 +175,9 @@ class Player:
         self.position.y = max(0, min(Const.ARENA_SIZE[1], self.position.y))
     
     def swap(self):
-        if self.status == 'a':
-            self.status = 'd'
+        if self.status == 'attacker':
+            self.status = 'defender'
             self.speed = Const.SPEED_DEFENSE
         else:
-            self.status = 'a'
+            self.status = 'attacker'
             self.speed = Const.SPEED_ATTACK

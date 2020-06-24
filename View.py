@@ -69,9 +69,17 @@ class GraphicalView:
     def render_play(self):
         # draw background
         self.screen.fill(Const.BACKGROUND_COLOR)
-
+        font = pg.font.Font(None, 25)
+        timer = font.render(f"Timer: {self.model.timer // Const.FPS}", 1, pg.Color('gray88'))
+        s = font.render(f"swap timer: {(self.model.timer % (self.model.t * Const.FPS))//Const.FPS},violet: {self.model.players[0].status}, green: {self.model.players[1].status}", 1, pg.Color('gray88'))
+        timer_center = (50, 20)
+        s_center = (600,775)
+        self.screen.blit(s, s.get_rect(center=s_center))
+        self.screen.blit(timer, timer.get_rect(center=timer_center))
         # draw players
         for player in self.model.players:
+            self.screen.blit(s, s.get_rect(center=s_center))
+            self.screen.blit(timer, timer.get_rect(center=timer_center))
             center = list(map(int, player.position))
             pg.draw.circle(self.screen, Const.PLAYER_COLOR[player.player_id], center, Const.PLAYER_RADIUS)
 
