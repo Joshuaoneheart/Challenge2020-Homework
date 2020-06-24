@@ -89,7 +89,6 @@ class GameEngine:
                 self.update_menu()
             elif cur_state == Const.STATE_PLAY:
                 self.update_objects()
-
                 self.timer -= 1
                 if self.timer == 0:
                     self.ev_manager.post(EventTimesUp())
@@ -107,7 +106,14 @@ class GameEngine:
             self.running = False
 
         elif isinstance(event, EventPlayerMove):
+            pos = [[self.players[i].position.x,self.players[i].position.y].copy() for i in range(len(self.players))]
             self.players[event.player_id].move_direction(event.direction)
+            if pg.math.Vector2.magnitude(self.players[0].position - self.players[1].position) <= Const.PLAYER_RADIUS * 2:
+                self.players[0].position.x = pos[0][0]
+                self.players[0].position.y = pos[0][1]
+                self.players[1].position.x = pos[1][0]
+                self.players[1].position.y = pos[1][1]
+                self.ev_manager.post(EventCollide())
 
         elif isinstance(event, EventTimesUp):
             self.state_machine.push(Const.STATE_ENDGAME)
@@ -141,7 +147,13 @@ class GameEngine:
         self.running = True
         self.ev_manager.post(EventInitialize())
         self.timer = Const.GAME_LENGTH
+        t = 5
+        prev = self.timer
         while self.running:
+            if prev - self.timer >= t * Const.FPS:
+                self.players[0].swap()
+                self.players[1].swap()
+                prev = self.timer
             self.ev_manager.post(EventEveryTick())
             self.clock.tick(Const.FPS)
 
@@ -151,6 +163,7 @@ class Player:
         self.player_id = player_id
         self.position = Const.PLAYER_INIT_POSITION[player_id] # is a pg.Vector2
         self.speed = Const.SPEED_ATTACK if player_id == 1 else Const.SPEED_DEFENSE
+        self.status = 'a'  if player_id == 1 else 'd'
 
     def move_direction(self, direction: str):
         '''
@@ -162,3 +175,11 @@ class Player:
         # clipping
         self.position.x = max(0, min(Const.ARENA_SIZE[0], self.position.x))
         self.position.y = max(0, min(Const.ARENA_SIZE[1], self.position.y))
+    
+    def swap(self):
+        if self.status == 'a':
+            self.status = 'd'
+            self.speed = Const.SPEED_DEFENSE
+        else:
+            self.status = 'a'
+            self.speed = Const.SPEED_ATTACK

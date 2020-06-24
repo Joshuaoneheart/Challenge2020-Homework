@@ -80,3 +80,6 @@ class EventPlayerMove(BaseEvent):
 
     def __str__(self):
         return f'{self.name} => player_id {self.player_id} move {self.direction}'
+
+class EventCollide(BaseEvent):
+    name = "Collide Event"
