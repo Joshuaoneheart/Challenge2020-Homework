@@ -106,6 +106,12 @@ class GameEngine:
         elif isinstance(event, EventQuit):
             self.running = False
 
+        elif isinstance(event, EventPause):
+            self.state_machine.push(Const.STATE_STOP)
+
+        elif isinstance(event, EventResume):
+            self.state_machine.pop()
+
         elif isinstance(event, EventPlayerMove):
             pos = [[self.players[i].position.x,self.players[i].position.y].copy() for i in range(len(self.players))]
             self.players[event.player_id].move_direction(event.direction)

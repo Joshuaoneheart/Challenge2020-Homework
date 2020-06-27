@@ -37,8 +37,10 @@ PLAYER_KEYS = {
     pg.K_LEFT: (1, 'left'),
     pg.K_DOWN: (1, 'down'),
     pg.K_RIGHT: (1, 'right'),
+    pg.K_SPACE: (1, 'stop'),
     pg.K_w: (0, 'up'),
     pg.K_a: (0, 'left'),
     pg.K_s: (0, 'down'),
     pg.K_d: (0, 'right'),
+    pg.K_q: (0, 'stop')
 }

@@ -83,3 +83,9 @@ class EventPlayerMove(BaseEvent):
 
 class EventCollide(BaseEvent):
     name = "Collide Event"
+
+class EventPause(BaseEvent):
+    name = "Pause Event"
+
+class EventResume(BaseEvent):
+    name = "Resume Event"
